@@ -1,0 +1,121 @@
+From 6116e6618aa3e1cb0873af8b95af6e74623a0674 Mon Sep 17 00:00:00 2001
+From: khicas-fork <khicas-fork@localhost>
+Date: Mon, 28 Sep 2026 18:02:01 +0100
+Subject: [PATCH 16/21] Remove QR startup page; move overclock and erase
+ session to SETUP menu
+
+---
+ console.cc | 29 ++++++++++++++++++++++++++---
+ main.cc    | 21 ---------------------
+ 2 files changed, 26 insertions(+), 24 deletions(-)
+
+diff --git a/console.cc b/console.cc
+index 690c156..6836d69 100644
+--- a/console.cc
++++ b/console.cc
+@@ -43,6 +43,7 @@ extern "C" {
+ #include "constantsProvider.hpp"
+ #include "main.h"
+ #include "qrcodegen.h"
++#include "overclock.h"
+ //#define POPUP_PRETTY 1
+ #define POPUP_PRETTY_STR "Pretty print"
+ 
+@@ -62,6 +63,7 @@ giac::context * contextptr=0;
+ int xthetat=0,xcas_python_eval=0;
+ // Monolith: set to 1 before calling Console_Disp from an overlay to suppress the premature flip.
+ int g_suppress_status_flip = 0;
++extern int cpu_speed;  /* Monolith: defined in main.cc; read/set by SETUP overclock option */
+ 
+ //const console_line data_line={0,0,0,-1,0};
+ console_line * Line=0;//[LINE_MAX];//={data_line};
+@@ -119,7 +121,7 @@ void set_xcas_status(){
+ 
+ void menu_setup(){
+   Menu smallmenu;
+-  smallmenu.numitems=10;
++  smallmenu.numitems=12;
+   MenuItem smallmenuitems[smallmenu.numitems];
+   smallmenu.items=smallmenuitems;
+   smallmenu.height=8;
+@@ -138,7 +140,9 @@ void menu_setup(){
+   smallmenuitems[6].text = (char*)"Step/step";
+   smallmenuitems[7].text = (char *) (lang?"Raccourcis":"Shortcuts");
+   smallmenuitems[8].text = (char*) (lang?"A propos":"About");
+-  smallmenuitems[9].text = (char*) "Quit";
++  smallmenuitems[9].text = (char*)(lang?"Accelerer processeur":"Overclock CPU");
++  smallmenuitems[10].text = (char*)(lang?"Effacer session":"Erase session");
++  smallmenuitems[11].text = (char*)"Quit";
+   // smallmenuitems[2].text = (char*)(isRecording ? "Stop Recording" : "Record Script");
+   while(1) {
+ #ifdef MICROPY_LIB
+@@ -161,7 +165,7 @@ void menu_setup(){
+     if (sres==MENU_RETURN_EXIT)
+       break;
+     if (sres == MENU_RETURN_SELECTION) {
+-      if (smallmenu.selection==10)
++      if (smallmenu.selection==12)
+ 	break;
+       if (smallmenu.selection==5){
+ 	double d=decimal_digits(contextptr);
+@@ -254,6 +258,25 @@ void menu_setup(){
+ 	giac::step_infolevel(!giac::step_infolevel(contextptr),contextptr);
+ 	continue;
+       }
++      if (smallmenu.selection==10){
++	/* Monolith: overclock from SETUP menu (was *10^x on the startup QR page) */
++	if (!cpu_speed){
++	  if (do_confirm(lang?"Accelerer processeur?":"Overclock CPU?"))
++	    { cpu_speed=clock_get_speed(); clock_set_speed(5); }
++	} else
++	  confirm(lang?"Deja accelere.":"Already overclocked.","F1/F6 OK");
++	continue;
++      }
++      if (smallmenu.selection==11){
++	/* Monolith: erase session from SETUP menu (was DEL on the startup QR page) */
++	if (do_confirm(lang?"Effacer " MONOLITH_SESSION ".xw?":"Erase " MONOLITH_SESSION ".xw?")){
++	  unsigned short pFile[MAX_FILENAME_SIZE+1];
++	  const char efname[]="\\\\fls0\\" MONOLITH_SESSION ".xw";
++	  Bfile_StrToName_ncpy(pFile,(const unsigned char *)efname,strlen(efname)+1);
++	  Bfile_DeleteEntry(pFile);
++	}
++	continue;
++      }
+       if (smallmenu.selection>=8) {
+ 	textArea text;
+ 	text.editable=false;
+diff --git a/main.cc b/main.cc
+index e45ef18..67b9fab 100644
+--- a/main.cc
++++ b/main.cc
+@@ -1432,27 +1432,6 @@ int main1(){
+   // confirm("main","1.5");
+   // overclock disabled on khicas50
+   cpu_speed=0;
+-  if (1 ||
+-      calculator==1
+-      // && ram_filename[13]!='5'
+-      ){
+-    int key=QRdisp(lang==1?"https://www-fourier.univ-grenoble-alpes.fr/~parisse/casio/khicasio.html":"https://www-fourier.univ-grenoble-alpes.fr/~parisse/casio/khicasioen.html","KhiCAS doc QRcode",lang==1?"*10^x: accelerer":"*10^x: overclock",lang==1?"EXE: vitesse normale":"EXE: normal speed",lang==1?"DEL: efface session":"DEL: erase session");
+-    if (//1 ||
+-        calculator==1 &&
+-        key==KEY_CHAR_EXP
+-	// do_confirm(lang==1?"Accelerer la vitesse processeur?":"Overclock processor speed?")
+-        ){
+-      confirm(lang==1?"Vitesse processeur acceleree.":"Processor overclocked.","F1/F6 OK");
+-      cpu_speed=clock_get_speed();
+-      clock_set_speed(5);
+-    }
+-    if (key==KEY_CTRL_DEL && do_confirm(lang==1?"Effacer " MONOLITH_SESSION ".xw?":"Erase " MONOLITH_SESSION ".xw?")){
+-      unsigned short pFile[MAX_FILENAME_SIZE+1];
+-      const char filename[]="\\\\fls0\\" MONOLITH_SESSION ".xw";
+-      Bfile_StrToName_ncpy(pFile, (const unsigned char *) filename, strlen(filename)+1);
+-      int res=0; res=Bfile_DeleteEntry(pFile);      
+-    }
+-  }
+   //{ char buf[2]={0,0}; buf[0]='0'+cpu_speed; print_msg12("CPU speed (0 unknown, 1-5)",buf); int key; GetKey(&key); }
+ #ifdef BF2GMP
+   // initialize context
+-- 
+2.53.0
+

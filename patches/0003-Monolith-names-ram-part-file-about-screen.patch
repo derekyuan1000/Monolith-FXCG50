@@ -1,0 +1,112 @@
+From 47881b0b08c7c04adc9fd938410174102fbb0809 Mon Sep 17 00:00:00 2001
+From: khicas-fork <khicas-fork@localhost>
+Date: Thu, 24 Sep 2026 19:23:12 +0100
+Subject: [PATCH 03/21] Monolith: names, ram part file, about screen
+
+---
+ catalogen.cpp |  2 +-
+ console.cc    |  4 ++--
+ main.cc       | 23 +++++++++++------------
+ 3 files changed, 14 insertions(+), 15 deletions(-)
+
+diff --git a/catalogen.cpp b/catalogen.cpp
+index 6718815..16bc277 100644
+--- a/catalogen.cpp
++++ b/catalogen.cpp
+@@ -67,7 +67,7 @@ void reset_alpha(){
+ }
+ 
+ int lang=0;
+-const char ram_filename[]="\\\\fls0\\khicas50.8c2";
++const char ram_filename[]="\\\\fls0\\monolith.8c2";
+ const catalogFunc completeCat[] = { // list of all functions (including some not in any category)
+   {" loop for", "for ", "Defined loop.", "#\nfor ", 0, CAT_CATEGORY_PROG},
+   {" loop in list", "for in", "Loop on all elements of a list.", "#\nfor in", 0, CAT_CATEGORY_PROG},
+diff --git a/console.cc b/console.cc
+index bc74b8b..da11381 100644
+--- a/console.cc
++++ b/console.cc
+@@ -2662,13 +2662,13 @@ int Console_GetKey(){
+ 	    continue;
+           } 
+ 	  if (smallmenu.selection==17){
+-	    if (do_confirm("Quitter en reinitialisant KhiCAS?")){
++	    if (do_confirm("Quitter en reinitialisant Monolith?")){
+ 	      unsigned short pFile[MAX_FILENAME_SIZE+1];
+ 	      char filename[]="\\\\fls0\\session.xw";
+ 	      Bfile_StrToName_ncpy(pFile, (const unsigned char*)filename, strlen(filename)+1); 
+ 	      Bfile_DeleteEntry(pFile);
+ 	      SetQuitHandler(0);
+-	      print_msg12(lang==1?"Taper sur MENU, ouvrez une autre":"Type MENU key, open another",lang==1?"application avant de reouvrir KhiCAS":"application before reopening KhiCAS");
++	      print_msg12(lang==1?"Taper sur MENU, ouvrez une autre":"Type MENU key, open another",lang==1?"application avant de reouvrir Monolith":"application before reopening Monolith");
+ 	      for (;;){ //wait for ever
+ 		int key;
+ 		GetKey(&key);
+diff --git a/main.cc b/main.cc
+index 89159e5..3a577fb 100644
+--- a/main.cc
++++ b/main.cc
+@@ -897,9 +897,9 @@ int in_ckgetkey(int * keyptr,int waitforkey,const char * menu,const char * shift
+ #endif
+ #if 1
+       if (lang)
+-	print_msg12("Pour relancer KhiCAS, tapez les touches","MENU tan MENU");
++	print_msg12("Pour relancer Monolith, tapez les touches","MENU tan MENU");
+       else
+-	print_msg12("To restart KhiCAS, type keys","MENU tan MENU");
++	print_msg12("To restart Monolith, type keys","MENU tan MENU");
+       Bdisp_PutDisp_DD ();
+       set_menu_timer();
+       GetKey(keyptr);
+@@ -1404,12 +1404,9 @@ int main1(){
+ #endif // GINT_MALLOC
+   int errcode=chk_ram2M(ram_filename,2); // 2=force reload
+   if (errcode<=0){
+-    char buf[]="khicas90.ac2 err=0";
+-    buf[6]=ram_filename[13]; // \fls0\emucas90
+-    if (buf[6]=='0')
+-      buf[6]=ram_filename[12]; // \fls0\excas90
++    char buf[]="monolith.ac2 err=0";
+     if (is_emulator){
+-      buf[9]=buf[10]='8';
++      buf[9]=buf[10]='8'; // monolith.882
+     }
+     buf[strlen(buf)-1]='0'-errcode;
+     print_msg12("Fatal: unable to load ram part",buf);
+@@ -1420,9 +1417,9 @@ int main1(){
+   }
+   errcode=chk_ram2M(ram_filename,false);
+   if (errcode<=0){
+-    char buf[]="khicas.ac2 err=0";
++    char buf[]="monolith.ac2 err=0";
+     if (is_emulator){
+-      buf[7]=buf[8]='8';
++      buf[9]=buf[10]='8'; // monolith.882
+     }
+     buf[strlen(buf)-1]='0'-errcode;
+     print_msg12("Fatal: unable to check ram part",buf);
+@@ -1509,7 +1506,7 @@ int main1(){
+       }
+     }
+     if (*(unsigned *)addr!=exammodeptr || doit){
+-      confirm("1ere utilisation de KhiCAS","session.xw va etre efface");
++      confirm("1ere utilisation de Monolith","session.xw va etre efface");
+       *(unsigned *)addr=exammodeptr;
+       memcpy(addr+4,patch,0x34);
+       unsigned short pFile[MAX_FILENAME_SIZE+1];
+@@ -2708,8 +2705,10 @@ int restore_session(const char * fname){
+   // cout << "0" << fname << endl; Console_Disp(); ck_getkey(&key);
+   string filename(remove_path0(remove_extension(fname)));
+   if (!load_console_state_smem((string("\\\\fls0\\")+filename+string(".xw")).c_str())){
+-    int x=0,y=92;
+-    PrintMini(&x,&y,(unsigned char*)"KhiCAS 1.8 (c) 2024 B. Parisse et al",0x02, 0xFFFFFFFF, 0, 0, COLOR_BLACK, COLOR_WHITE, 1, 0);
++    int x=0,y=74;
++    PrintMini(&x,&y,(unsigned char*)"Monolith 0.2.0, fork of KhiCAS 1.8",0x02, 0xFFFFFFFF, 0, 0, COLOR_BLACK, COLOR_WHITE, 1, 0);
++    x=0; y+=18;
++    PrintMini(&x,&y,(unsigned char*)"KhiCAS (c) 2024 B. Parisse et al",0x02, 0xFFFFFFFF, 0, 0, COLOR_BLACK, COLOR_WHITE, 1, 0);
+     x=0; y+=18;
+ #ifdef MICROPY_LIB
+     PrintMini(&x,&y,(unsigned char*)"MicroPython 1.12 (c) D. George et al",0x02, 0xFFFFFFFF, 0, 0, COLOR_BLACK, COLOR_WHITE, 1, 0);
+-- 
+2.53.0
+

@@ -1,0 +1,44 @@
+From e40c5f0124ccf0a85dc4bdddc19b60acf3be4117 Mon Sep 17 00:00:00 2001
+From: khicas-fork <khicas-fork@localhost>
+Date: Sun, 27 Sep 2026 14:21:56 +0100
+Subject: [PATCH 12/21] Shell: S<->D opens the result-form pop-up (zsd_open)
+ instead of the add-ins menu (M2 task 6)
+
+---
+ console.cc | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/console.cc b/console.cc
+index 922500e..f4e7436 100644
+--- a/console.cc
++++ b/console.cc
+@@ -48,6 +48,9 @@ extern "C" {
+ extern "C" const char * const * mp_vars();
+ #endif
+ int khicas_addins_menu(GIAC_CONTEXT);
++// Monolith (M2 task 6): S<->D result-form pop-up (skin/zsd_ui.cc); declared the same way as the
++// add-ins menu above, for the same reason (a one-line hook, no shared struct/constant).
++int zsd_open(GIAC_CONTEXT);
+ 
+ giac::context * contextptr=0;
+ int xthetat=0,xcas_python_eval=0;
+@@ -2433,9 +2436,13 @@ int Console_GetKey(){
+       continue;
+     }
+     if (key==KEY_CTRL_SD || key==KEY_CTRL_FD){
+-      khicas_addins_menu(contextptr);
+-      Console_Disp();
+-      continue;
++      // Monolith (M2 task 6): S<->D opens a native-list-style pop-up to choose the form of the last result
++      // (docs/KEY_CONFLICTS.md section 3, "S<->D" row), instead of the add-ins menu (still reachable from
++      // F6 Applications, unchanged below). zsd_open returns CONSOLE_SUCCEEDED (cancelled, or nothing to
++      // convert yet) or Console_NewLine's CONSOLE_NEW_LINE_SET (a form was picked and evaluated as a fresh
++      // input+output pair); either way it must propagate out of Console_GetKey exactly like the template-key
++      // hooks above do, so Console_GetLine's own loop sees CONSOLE_NEW_LINE_SET when one is picked.
++      return zsd_open(contextptr);
+     }
+     if (key==KEY_CTRL_PASTE)
+       return Console_Input((const unsigned char*) paste_clipboard());
+-- 
+2.53.0
+

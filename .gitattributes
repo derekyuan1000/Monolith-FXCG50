@@ -1,0 +1,6 @@
+*.sh text eol=lf
+Makefile text eol=lf
+tests/corpus/* text eol=lf
+assets/*.png binary
+tools/fork_objs.txt text eol=lf
+patches/*.patch text eol=lf

@@ -1,0 +1,173 @@
+From 88e0692f7ad499dc27019b19620ab6d0f640a26c Mon Sep 17 00:00:00 2001
+From: khicas-fork <khicas-fork@localhost>
+Date: Thu, 24 Sep 2026 19:32:53 +0100
+Subject: [PATCH 04/21] Monolith: own default session file (monolith.xw), never
+ touch official KhiCAS session.xw
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+---
+ console.cc | 10 +++++-----
+ console.h  |  2 ++
+ main.cc    | 24 ++++++++++++------------
+ zadd.cc    |  2 +-
+ 4 files changed, 20 insertions(+), 18 deletions(-)
+
+diff --git a/console.cc b/console.cc
+index da11381..f334046 100644
+--- a/console.cc
++++ b/console.cc
+@@ -52,7 +52,7 @@ int xthetat=0,xcas_python_eval=0;
+ console_line * Line=0;//[LINE_MAX];//={data_line};
+ const int maxfmenusize=16;
+ char menu_f1[maxfmenusize]={0},menu_f2[maxfmenusize]={0},menu_f3[maxfmenusize]={0},menu_f4[maxfmenusize]={0},menu_f5[maxfmenusize]={0},menu_f6[maxfmenusize],menu_f7[maxfmenusize]={0},menu_f8[maxfmenusize]={0},menu_f9[maxfmenusize]={0},menu_f10[maxfmenusize]={0},menu_f11[maxfmenusize]={0},menu_f12[maxfmenusize]={0},menu_f13[maxfmenusize]={0},menu_f14[maxfmenusize]={0},menu_f15[maxfmenusize]={0},menu_f16[maxfmenusize]={0},menu_f17[maxfmenusize]={0},menu_f18[maxfmenusize]={0};
+-char session_filename[MAX_FILENAME_SIZE+1]="session";
++char session_filename[MAX_FILENAME_SIZE+1]=MONOLITH_SESSION;
+ char * FMenu_entries_name[]={menu_f1,menu_f2,menu_f3,menu_f4,menu_f5,menu_f6,menu_f7,menu_f8,menu_f9,menu_f10,menu_f11,menu_f12,menu_f13,menu_f14,menu_f15,menu_f16,menu_f17,menu_f18};
+ location Cursor;
+ unsigned char *Edit_Line=0;
+@@ -2536,7 +2536,7 @@ int Console_GetKey(){
+ 	    break;
+ 	  }
+ 	  if (smallmenu.selection==2){
+-	    if (strcmp(session_filename,"session")==0)
++	    if (strcmp(session_filename,MONOLITH_SESSION)==0)
+ 	      smallmenu.selection=3;
+ 	    else {
+ 	      save(session_filename);
+@@ -2557,7 +2557,7 @@ int Console_GetKey(){
+ 	  if (smallmenu.selection==4){
+ 	    char filename[MAX_FILENAME_SIZE+1];
+ 	    if (fileBrowser(filename, (char*)"*.xw", (char *)"Sessions")){
+-	      if (console_changed==0 || strcmp(session_filename,"session")==0 || confirm(lang?"Session courante perdue?":"Current session will be lost",lang?"F1: annul, F6: ok":"F1: cancel, F6: ok")==KEY_CTRL_F6){
++	      if (console_changed==0 || strcmp(session_filename,MONOLITH_SESSION)==0 || confirm(lang?"Session courante perdue?":"Current session will be lost",lang?"F1: annul, F6: ok":"F1: cancel, F6: ok")==KEY_CTRL_F6){
+ 		giac::clear_context(contextptr); // giac::_restart(giac::gen(giac::vecteur(0),giac::_SEQ__VECT),contextptr);
+ 		restore_session(filename);
+ 		strcpy(session_filename,remove_path0(giac::remove_extension(filename)).c_str());
+@@ -2577,7 +2577,7 @@ int Console_GetKey(){
+ 	    char filename[MAX_FILENAME_SIZE+1];
+ 	    drawRectangle(0, 0, LCD_WIDTH_PX, LCD_HEIGHT_PX, COLOR_WHITE);
+ 	    if (get_filename(filename,".xw")){
+-	      if (console_changed==0 || strcmp(session_filename,"session")==0 || confirm(lang?"Session courante perdue?":"Current session will be lost",lang?"F1: annul, F6: ok":"F1: cancel, F6: ok")==KEY_CTRL_F6){
++	      if (console_changed==0 || strcmp(session_filename,MONOLITH_SESSION)==0 || confirm(lang?"Session courante perdue?":"Current session will be lost",lang?"F1: annul, F6: ok":"F1: cancel, F6: ok")==KEY_CTRL_F6){
+ 		Console_Init();
+ 		Console_Clear_EditLine();
+ 		giac::_restart(giac::gen(giac::vecteur(0),giac::_SEQ__VECT),contextptr);
+@@ -2664,7 +2664,7 @@ int Console_GetKey(){
+ 	  if (smallmenu.selection==17){
+ 	    if (do_confirm("Quitter en reinitialisant Monolith?")){
+ 	      unsigned short pFile[MAX_FILENAME_SIZE+1];
+-	      char filename[]="\\\\fls0\\session.xw";
++	      char filename[]="\\\\fls0\\" MONOLITH_SESSION ".xw";
+ 	      Bfile_StrToName_ncpy(pFile, (const unsigned char*)filename, strlen(filename)+1); 
+ 	      Bfile_DeleteEntry(pFile);
+ 	      SetQuitHandler(0);
+diff --git a/console.h b/console.h
+index f065b8a..70b9581 100644
+--- a/console.h
++++ b/console.h
+@@ -21,6 +21,8 @@ int QRdisp(const char * text,const char *msg1="  Flash this to",const char * msg
+ 
+ #define MAX_FILENAME_SIZE 270
+ #define DATAFOLDER "\\\\fls0\\@KHICAS"
++// Monolith default session stem (file fls0/monolith.xw). Never "session": official KhiCAS owns session.xw.
++#define MONOLITH_SESSION "monolith"
+ //#define CONSOLESTATEFILE (char*)DATAFOLDER"\\khicas.erd"
+ void save_console_state_smem(const char * filename,bool dispqr);
+ bool load_console_state_smem(const char * filename);
+diff --git a/main.cc b/main.cc
+index 3a577fb..3aa06ab 100644
+--- a/main.cc
++++ b/main.cc
+@@ -827,8 +827,8 @@ void set_menu_timer(){
+ 
+ void MENU_save(){
+   if (console_changed){
+-    save("session");
+-    if (strcmp(session_filename,"session")==0)
++    save(MONOLITH_SESSION);
++    if (strcmp(session_filename,MONOLITH_SESSION)==0)
+       console_changed=0;
+   }
+ }  
+@@ -1445,9 +1445,9 @@ int main1(){
+       cpu_speed=clock_get_speed();
+       clock_set_speed(5);
+     }
+-    if (key==KEY_CTRL_DEL && do_confirm(lang==1?"Effacer session.xw?":"Erase session.xw?")){
++    if (key==KEY_CTRL_DEL && do_confirm(lang==1?"Effacer " MONOLITH_SESSION ".xw?":"Erase " MONOLITH_SESSION ".xw?")){
+       unsigned short pFile[MAX_FILENAME_SIZE+1];
+-      const char filename[]="\\\\fls0\\session.xw";
++      const char filename[]="\\\\fls0\\" MONOLITH_SESSION ".xw";
+       Bfile_StrToName_ncpy(pFile, (const unsigned char *) filename, strlen(filename)+1);
+       int res=0; res=Bfile_DeleteEntry(pFile);      
+     }
+@@ -1506,17 +1506,17 @@ int main1(){
+       }
+     }
+     if (*(unsigned *)addr!=exammodeptr || doit){
+-      confirm("1ere utilisation de Monolith","session.xw va etre efface");
++      confirm("1ere utilisation de Monolith",MONOLITH_SESSION ".xw va etre efface");
+       *(unsigned *)addr=exammodeptr;
+       memcpy(addr+4,patch,0x34);
+       unsigned short pFile[MAX_FILENAME_SIZE+1];
+-      const char filename[]="\\\\fls0\\session.xw";
++      const char filename[]="\\\\fls0\\" MONOLITH_SESSION ".xw";
+       Bfile_StrToName_ncpy(pFile, (const unsigned char *) filename, strlen(filename)+1);
+       int res=0; res=Bfile_DeleteEntry(pFile);
+       // char bufmcs[64]={0}; printx(bufmcs,res);    
+     }
+   }
+-  restore_session("session");
++  restore_session(MONOLITH_SESSION);
+   //ck_getkey(&key);
+ #if 0
+   //int tableau=0;
+@@ -2676,7 +2676,7 @@ void save(const char * fname){
+   Bdisp_PutDisp_DD();
+   clear_abort();
+   string filename(remove_path0(remove_extension(fname)));
+-  save_console_state_smem(("\\\\fls0\\"+filename+".xw").c_str(),strcmp(filename,"session")); // call before save_khicas_symbols_smem(), because this calls create_data_folder if necessary!
++  save_console_state_smem(("\\\\fls0\\"+filename+".xw").c_str(),strcmp(filename,MONOLITH_SESSION)); // call before save_khicas_symbols_smem(), because this calls create_data_folder if necessary!
+   // save_khicas_symbols_smem(("\\\\fls0\\"+filename+".xw").c_str());
+   if (edptr)
+     check_leave(edptr);
+@@ -2684,7 +2684,7 @@ void save(const char * fname){
+ }
+ 
+ void save_session(){
+-  if (strcmp(session_filename,"session") && console_changed){
++  if (strcmp(session_filename,MONOLITH_SESSION) && console_changed){
+     ustl::string tmp(session_filename);
+     tmp += lang?" a ete modifie!":" was modified!";
+     if (confirm(tmp.c_str(),lang?"F1: sauvegarder, F6: tant pis":"F1: save, F6: discard changes")==KEY_CTRL_F1){
+@@ -2692,11 +2692,11 @@ void save_session(){
+       console_changed=0;
+     }    
+   }
+-  save("session");
++  save(MONOLITH_SESSION);
+   // this is only called on exit, no need to reinstall the check_execution_abort timer.
+-  if (edptr && edptr->changed && edptr->filename!="\\\\fls0\\session.py"){
++  if (edptr && edptr->changed && edptr->filename!="\\\\fls0\\" MONOLITH_SESSION ".py"){
+     if (!check_leave(edptr)){
+-      save_script("\\\\fls0\\lastprg.py",merge_area(edptr->elements));
++      save_script("\\\\fls0\\monolith_lastprg.py",merge_area(edptr->elements));
+     }
+   }
+ }
+diff --git a/zadd.cc b/zadd.cc
+index 33d4b91..d5e20ab 100755
+--- a/zadd.cc
++++ b/zadd.cc
+@@ -42,7 +42,7 @@ namespace giac {
+     sheetptr->recompute=true;
+     sheetptr->matrix_fill_cells=true;
+     sheetptr->movedown=true;
+-    sheetptr->filename="session";
++    sheetptr->filename=MONOLITH_SESSION;
+     return sheetptr;
+   }
+   gen current_sheet(const gen & g,GIAC_CONTEXT){
+-- 
+2.53.0
+

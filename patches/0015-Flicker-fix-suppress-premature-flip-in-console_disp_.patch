@@ -1,0 +1,63 @@
+From c36f606274dc3f4d92064f88da9b1939dbfe79b4 Mon Sep 17 00:00:00 2001
+From: khicas-fork <khicas-fork@localhost>
+Date: Mon, 28 Sep 2026 17:49:15 +0100
+Subject: [PATCH 15/21] Flicker fix: suppress premature flip in
+ console_disp_status when overlay is drawing; decimal output default
+
+---
+ console.cc | 5 ++++-
+ console.h  | 1 +
+ main.cc    | 2 ++
+ 3 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/console.cc b/console.cc
+index f05e041..690c156 100644
+--- a/console.cc
++++ b/console.cc
+@@ -60,6 +60,8 @@ int zcas_open(int menucolorbg);
+ 
+ giac::context * contextptr=0;
+ int xthetat=0,xcas_python_eval=0;
++// Monolith: set to 1 before calling Console_Disp from an overlay to suppress the premature flip.
++int g_suppress_status_flip = 0;
+ 
+ //const console_line data_line={0,0,0,-1,0};
+ console_line * Line=0;//[LINE_MAX];//={data_line};
+@@ -3429,7 +3431,8 @@ void console_disp_status(){
+   skin_tabs_draw(labels,skin_tabs_fg(menucolorbg));
+   // status, clock, 
+   set_xcas_status();
+-  Bdisp_PutDisp_DD();
++  /* Monolith: suppressed when an overlay (fraction editor, S<->D panel, sub-bar) is drawing on top */
++  if (!g_suppress_status_flip) Bdisp_PutDisp_DD();
+ }  
+ 
+ int Console_Disp(){
+diff --git a/console.h b/console.h
+index 5f55ee2..1884e9d 100644
+--- a/console.h
++++ b/console.h
+@@ -150,6 +150,7 @@ const char * input_matrix(bool list);
+ extern char xcas_status[64];
+ void set_xcas_status();
+ void zskin_sync_modes();
++extern int g_suppress_status_flip;  /* Monolith: suppresses premature flip when overlay is drawing */
+ 
+ extern int xthetat;
+ const char * keytostring(int key,int keyflag); // key to char *, 0 if not handled
+diff --git a/main.cc b/main.cc
+index bb06a38..e45ef18 100644
+--- a/main.cc
++++ b/main.cc
+@@ -2705,6 +2705,8 @@ void save_session(){
+ 
+ int restore_session(const char * fname){
+   // cout << "0" << fname << endl; Console_Disp(); ck_getkey(&key);
++  /* Monolith: decimal output as default; overridden if the session file stores an explicit mode. */
++  if (contextptr) { giac::approx_mode(1,contextptr); giac::approx_mode(1,giac::context0); }
+   string filename(remove_path0(remove_extension(fname)));
+   if (!load_console_state_smem((string("\\\\fls0\\")+filename+string(".xw")).c_str())){
+     int x=0,y=74;
+-- 
+2.53.0
+

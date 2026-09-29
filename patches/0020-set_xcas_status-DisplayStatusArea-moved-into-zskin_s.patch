@@ -1,0 +1,29 @@
+From cd5d4b337b70f0526cd5ba0309840d5fe2accb47 Mon Sep 17 00:00:00 2001
+From: khicas-fork <khicas-fork@localhost>
+Date: Mon, 28 Sep 2026 22:44:02 +0100
+Subject: [PATCH 20/21] set_xcas_status: DisplayStatusArea moved into
+ zskin_status_runmat
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+---
+ console.cc | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/console.cc b/console.cc
+index e5f087b..655f08e 100644
+--- a/console.cc
++++ b/console.cc
+@@ -117,8 +117,9 @@ void zskin_sync_modes(){
+ 
+ void set_xcas_status(){
+   zskin_sync_modes();
++  /* DisplayStatusArea() is called inside zskin_status_runmat so box borders
++   * can be drawn on top of the OS-rendered text in the same pass. */
+   zskin_status_runmat(giac::angle_radian(contextptr));
+-  DisplayStatusArea();
+ }
+ 
+ void menu_setup(){
+-- 
+2.53.0
+

@@ -1,0 +1,115 @@
+From 634b0be3035c3b7b1b6a258c64dbddd370049f23 Mon Sep 17 00:00:00 2001
+From: khicas-fork <khicas-fork@localhost>
+Date: Thu, 24 Sep 2026 17:57:30 +0100
+Subject: [PATCH 01/21] Shell status bar: native OS status icons, route
+ DefineStatusMessage through zskin wrapper
+
+---
+ console.cc  | 27 ++-------------------------
+ main.cc     |  3 ++-
+ menuGUI.cpp |  1 +
+ textGUI.cpp |  1 +
+ zdisplay.cc |  1 +
+ 5 files changed, 7 insertions(+), 26 deletions(-)
+
+diff --git a/console.cc b/console.cc
+index bde4a74..5437249 100644
+--- a/console.cc
++++ b/console.cc
+@@ -1,5 +1,6 @@
+ #include "giacPCH.h"
+ #include <fxcg/display.h>
++#include "zskin_status.h"
+ #include <fxcg/file.h>
+ #include <fxcg/keyboard.h>
+ #include <fxcg/system.h>
+@@ -71,31 +72,7 @@ int printmsg12(const char * msg1,const char * msg2){
+ }
+ 
+ void set_xcas_status(){
+-  ustl::string status;
+-  int heure,minute; // minutes rounded
+-  giac::get_time(heure,minute);
+-  status += char('0'+heure/10);
+-  status += char('0'+(heure%10));
+-  status += ':';
+-  status += char('0'+(minute/10));
+-  status += char('0'+(minute%10));
+-  status += xthetat?" t ":" x ";
+-  status += xcas_python_eval==1?" Python ":(giac::python_compat(contextptr)?(giac::python_compat(contextptr)==2?" XcasPy ^=xor ":" XcasPy ^=** "):" Xcas ");
+-  status += giac::angle_radian(contextptr)?"RAD ":"DEG ";
+-  if (strlen(session_filename)<=24)
+-    status += ustl::string(session_filename);
+-#if 0
+-  else {
+-    void * ptr = malloc(1024);
+-    size_t k=(size_t) ptr ;
+-    free(ptr);
+-    // size_t k=(size_t) status.c_str();
+-    // k &= 0x7fffffff;
+-    status += giac::hexa_print_INT_((int) k);
+-  }
+-#endif
+-  strcpy(xcas_status,status.c_str());
+-  DefineStatusMessage(xcas_status, 1, 0, 0);
++  zskin_status_icons();
+   DisplayStatusArea();
+ }
+ 
+diff --git a/main.cc b/main.cc
+index f978b1c..a608efb 100644
+--- a/main.cc
++++ b/main.cc
+@@ -4,6 +4,7 @@
+ #include <fxcg/keyboard.h>
+ #include "giacPCH.h"
+ #include <fxcg/display.h>
++#include "zskin_status.h"
+ #include <fxcg/file.h>
+ #include <fxcg/keyboard.h>
+ #include <fxcg/system.h>
+@@ -1474,7 +1475,7 @@ int main1(){
+   Bdisp_AllClr_VRAM();
+   Bdisp_EnableColor(1);
+   EnableStatusArea(0);
+-  DefineStatusAreaFlags(3, SAF_BATTERY | SAF_TEXT | SAF_GLYPH | SAF_ALPHA_SHIFT, 0, 0);
++  zskin_status_icons();
+   rand_seed(RTC_GetTicks(),contextptr);
+   VRAM_base = (color_t*)GetVRAMAddress();
+   // confirm("main","2.5");
+diff --git a/menuGUI.cpp b/menuGUI.cpp
+index 3e7e5a6..435db13 100644
+--- a/menuGUI.cpp
++++ b/menuGUI.cpp
+@@ -1,4 +1,5 @@
+ #include <fxcg/display.h>
++#include "zskin_status.h"
+ #include <fxcg/file.h>
+ #include <fxcg/keyboard.h>
+ #include <fxcg/system.h>
+diff --git a/textGUI.cpp b/textGUI.cpp
+index 0eb1d48..673a68f 100644
+--- a/textGUI.cpp
++++ b/textGUI.cpp
+@@ -1,5 +1,6 @@
+ #include "giacPCH.h"
+ #include <fxcg/display.h>
++#include "zskin_status.h"
+ #include <fxcg/file.h>
+ #include <fxcg/keyboard.h>
+ #include <fxcg/system.h>
+diff --git a/zdisplay.cc b/zdisplay.cc
+index 9f9a167..6412b2d 100644
+--- a/zdisplay.cc
++++ b/zdisplay.cc
+@@ -18,6 +18,7 @@
+ 
+ extern "C" {
+ #include <fxcg/display.h>
++#include "zskin_status.h"
+   int RTC_GetTicks();
+ }
+ #include "kdisplay.h"
+-- 
+2.53.0
+

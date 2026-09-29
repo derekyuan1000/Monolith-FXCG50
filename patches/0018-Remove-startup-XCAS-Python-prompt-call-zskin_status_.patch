@@ -1,0 +1,49 @@
+From 0a1a0ddba9877138bc62ec5f28fd810ea4aad9e5 Mon Sep 17 00:00:00 2001
+From: khicas-fork <khicas-fork@localhost>
+Date: Mon, 28 Sep 2026 22:09:39 +0100
+Subject: [PATCH 18/21] Remove startup XCAS/Python prompt; call
+ zskin_status_runmat for RUN-MAT status bar
+
+Interpreter choice is preserved in SETUP > Python/Xcas (unchanged).
+Default on first launch is now always Xcas.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+---
+ console.cc | 2 +-
+ main.cc    | 7 +++----
+ 2 files changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/console.cc b/console.cc
+index 05eb90c..e5f087b 100644
+--- a/console.cc
++++ b/console.cc
+@@ -117,7 +117,7 @@ void zskin_sync_modes(){
+ 
+ void set_xcas_status(){
+   zskin_sync_modes();
+-  zskin_status_icons();
++  zskin_status_runmat(giac::angle_radian(contextptr));
+   DisplayStatusArea();
+ }
+ 
+diff --git a/main.cc b/main.cc
+index 67b9fab..0fce3a8 100644
+--- a/main.cc
++++ b/main.cc
+@@ -2704,10 +2704,9 @@ int restore_session(const char * fname){
+ #endif
+     PrintMini(&x,&y,(unsigned char*)"  Do not use if CAS is forbidden",0x02, 0xFFFFFFFF, 0, 0, COLOR_RED, COLOR_WHITE, 1, 0);
+ #ifdef MICROPY_LIB
+-    if (confirm("Syntax?","F1: Xcas, F6: Python",0)==KEY_CTRL_F6){
+-      xcas::switch_to_micropy(false,contextptr);
+-      // python_compat(1,contextptr);
+-    }
++    /* Monolith: no startup interpreter choice; default is always Xcas.
++     * Interpreter can be changed from SETUP > Python/Xcas. */
++    { int key; GetKey(&key); }
+ #else
+     { int key; GetKey(&key); }
+ #endif
+-- 
+2.53.0
+
