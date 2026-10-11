@@ -1,7 +1,7 @@
 From f2590b98bc3e7d2b3b2e3b9777bc7108fad2c793 Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Thu, 24 Sep 2026 19:38:24 +0100
-Subject: [PATCH 05/21] OS angle setting authoritative in the shell
+Subject: [PATCH 05/22] OS angle setting authoritative in the shell
  (zskin_sync_modes); SETUP toggle writes OS byte
 
 ---

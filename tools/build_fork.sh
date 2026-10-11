@@ -9,7 +9,7 @@ OUT=$UP/fork-build
 # identity (CLAUDE.md 3.4: distinct name, icon, version)
 APP_NAME=Monolith
 APP_INTERNAL=MONOLITH
-APP_VERSION=0.2.0
+APP_VERSION=0.0.2
 STEM=monolith
 export PATH="$HOME/opt/sh3eb-elf/bin:$PATH"
 [ -d "$FORK/.git" ] || { echo "run tools/fork_setup.sh first"; exit 1; }

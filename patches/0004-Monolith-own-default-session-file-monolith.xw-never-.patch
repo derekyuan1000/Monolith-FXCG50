@@ -1,7 +1,7 @@
 From 88e0692f7ad499dc27019b19620ab6d0f640a26c Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Thu, 24 Sep 2026 19:32:53 +0100
-Subject: [PATCH 04/21] Monolith: own default session file (monolith.xw), never
+Subject: [PATCH 04/22] Monolith: own default session file (monolith.xw), never
  touch official KhiCAS session.xw
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>

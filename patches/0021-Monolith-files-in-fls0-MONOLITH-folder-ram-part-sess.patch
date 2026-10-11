@@ -1,7 +1,7 @@
 From 21f75d7b3507312dd377767229a54677e81a088a Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Tue, 29 Sep 2026 18:40:49 +0100
-Subject: [PATCH 21/21] Monolith files in \fls0\@MONOLITH folder (ram part,
+Subject: [PATCH 21/22] Monolith files in \fls0\@MONOLITH folder (ram part,
  session, FMENU.py); redraw status bar each key loop
 
 ---
