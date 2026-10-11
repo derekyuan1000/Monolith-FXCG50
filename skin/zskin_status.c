@@ -50,13 +50,17 @@ void zskin_status_runmat(int is_radian)
   /* gap strings between adjacent boxes: narrowed Norm1-d/c gap */
   const char *seps[4]   = {"  ", "  ", " ", "  "};
   int i, x, lw, bx, bw;
-  const int X0  = 0;   /* status text starts at left edge */
   const int PAD = 1;   /* box padding each side */
   const int BY  = 2;   /* top of box, absolute y in status bar */
   const int BH  = 19;  /* box height */
+  /* The OS draws the message from the left edge, so the text starts with LEAD: the first box's left border
+   * (X0 - PAD) then lands on screen instead of at x = -1, where it was clipped. */
+  static const char LEAD[] = " ";
+  const int X0  = gfx_text_width(LEAD);
 
   /* Build text string — separators must match seps[] widths above */
-  strncpy(buf, "Math  ", sizeof(buf) - 1);
+  strncpy(buf, LEAD, sizeof(buf) - 1);
+  strncat(buf, "Math  ", sizeof(buf) - 1 - strlen(buf));
   strncat(buf, angle, sizeof(buf) - 1 - strlen(buf));
   strncat(buf, "  Norm1 d/c  Real", sizeof(buf) - 1 - strlen(buf));
   buf[sizeof(buf) - 1] = 0;

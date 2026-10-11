@@ -32,6 +32,18 @@ Casio OS 3.80.0 is reported to crash KhiCAS; use 3.80.1 or 3.70.  The fx-CG Mana
 
 **Requirements:** Linux or WSL2 (the `sh3eb-elf` toolchain ships as Linux amd64 only), `git`, `python3`, `cmake`, `make`, `build-essential`.  Network access to `www-fourier.univ-grenoble-alpes.fr` is needed to download the pristine sources (~420 MB total).
 
+### One command (Windows PowerShell, from the repo root)
+
+```powershell
+.\build.ps1            # first run also sets up the toolchain (~5 min, asks for your WSL sudo password)
+.\build.ps1 -Refork    # after pulling new patches/: re-applies them to a fresh fork tree
+.\build.ps1 -NoPackage # skip the release zip
+```
+
+`build.ps1` runs only the steps that are needed, then writes `monolith.g3a` and `monolith.ac2` to `build/fork/` and a ready-to-copy `build/release/monolith-<version>.zip` (`monolith.g3a` plus `@MONOLITH/monolith.ac2`).  Use `-Distro <name>` if your WSL distribution is not called `Ubuntu`.
+
+### Step by step
+
 ```sh
 # First time: fetch sources and set up the toolchain (takes ~5 minutes)
 wsl -d Ubuntu -- bash tools/build_stock.sh
@@ -39,9 +51,28 @@ wsl -d Ubuntu -- bash tools/build_stock.sh
 # Apply Monolith patches and build
 wsl -d Ubuntu -- bash tools/fork_setup.sh
 wsl -d Ubuntu -- bash tools/build_fork.sh
+
+# Optional: release zip in build/release/
+wsl -d Ubuntu -- bash tools/package_release.sh
 ```
 
-`monolith.g3a` and `monolith.ac2` appear in `build/fork/`.  To change the KhiCAS side, commit in `~/khicas-work/fork` and run `tools/export_patches.sh` to refresh `patches/`.
+Run these from the repo root (`build_stock.sh` uses the current directory as the repo).
+
+### Development workflow
+
+- **Monolith's own files** (`gfx/`, `skin/`, `nin/`): edit them here and re-run the build. `build_fork.sh` copies them into the build tree and rebuilds incrementally.
+- **KhiCAS sources** (`console.cc`, `main.cc`, …): edit them in `~/khicas-work/fork`, commit there, then run `wsl -d Ubuntu -- bash tools/export_patches.sh` to refresh `patches/`.
+- **After pulling new patches**: run `.\build.ps1 -Refork`. `fork_setup.sh` on its own refuses to overwrite an existing fork tree.
+
+### Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| `missing …/giacbf.tgz` | Run `tools/build_stock.sh` (or `.\build.ps1`) first |
+| `fork already exists` | Expected when re-running `fork_setup.sh`; use `.\build.ps1 -Refork` to rebuild the fork from `patches/` |
+| `sh3eb-elf-gcc: not found` | The toolchain is installed under `~/opt/sh3eb-elf`; re-run `tools/build_stock.sh` |
+| Patch applied "with fuzz" | The patch no longer matches exactly; check the result in `~/khicas-work/fork`, then run `export_patches.sh` to regenerate it |
+| Add-in does not start | `@MONOLITH\monolith.ac2` is missing or out of date: copy both files from the same build |
 
 ## Licence
 

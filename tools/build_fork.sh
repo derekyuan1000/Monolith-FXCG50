@@ -51,7 +51,7 @@ sed -i "s/^GUI_OBJS = \(.*\)$/GUI_OBJS = \1 $EXTRA/" Makefile
 
 # 5. report and copy back
 echo "=== memory report (device link)"
-grep -A5 'Memory region' build.log | head -6
+grep -A5 'Memory region' build.log | head -6 || echo "(nothing relinked: outputs were up to date)"
 ls -l khicas50.g3a khicas50.ac2 emucas50.g3a khicas50.882
 sha256sum khicas50.g3a khicas50.ac2 emucas50.g3a khicas50.882
 mkdir -p "$REPO/build/fork"

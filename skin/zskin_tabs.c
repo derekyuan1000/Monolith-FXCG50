@@ -60,9 +60,10 @@ void skin_tabs_draw(const char labels[SKIN_TABS][SKIN_TAB_LABEL_MAX], gfx_color 
       clip[--len] = 0;
     w = gfx_text_width(clip);
     x = RM_TAB_X0 + i * RM_TAB_PITCH;
-    /* White 1px border then black fill — "box" look */
-    gfx_fill_rect(x, RM_TAB_TOP_Y, RM_TAB_WIDTH, RM_TAB_HEIGHT, GFX_WHITE);
-    gfx_fill_rect(x + 1, RM_TAB_TOP_Y + 1, RM_TAB_WIDTH - 2, RM_TAB_HEIGHT - 2, GFX_BLACK);
+    /* Black tab from 1px below the tab top down to the last screen row: the white gaps between tabs and the
+     * 1px row above them separate the tabs. Stopping 1px short of the bottom left white lines at each tab's
+     * bottom-left and bottom-right corners. */
+    gfx_fill_rect(x + 1, RM_TAB_TOP_Y + 1, RM_TAB_WIDTH - 2, GFX_HEIGHT - (RM_TAB_TOP_Y + 1), GFX_BLACK);
     gfx_text(x + (RM_TAB_WIDTH - w) / 2, RM_TAB_TOP_Y + SKIN_TAB_TEXT_DY, clip, fg, GFX_BLACK);
   }
 }
