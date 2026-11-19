@@ -1,7 +1,7 @@
 From 0605cacb0d275a481712a149f41bde379a60e21a Mon Sep 17 00:00:00 2001
 From: Derek Yuan <khicas-fork@localhost>
 Date: Thu, 19 Nov 2026 23:50:26 +0000
-Subject: [PATCH 24/24] One screen flip per key: Console_Disp before
+Subject: [PATCH 24/25] One screen flip per key: Console_Disp before
  in_ckgetkey no longer flips (g_defer_flip, CONSOLE_DISP_DEFERRED)
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>

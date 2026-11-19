@@ -1,7 +1,7 @@
 From 0a1a0ddba9877138bc62ec5f28fd810ea4aad9e5 Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Mon, 28 Sep 2026 22:09:39 +0100
-Subject: [PATCH 18/24] Remove startup XCAS/Python prompt; call
+Subject: [PATCH 18/25] Remove startup XCAS/Python prompt; call
  zskin_status_runmat for RUN-MAT status bar
 
 Interpreter choice is preserved in SETUP > Python/Xcas (unchanged).

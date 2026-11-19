@@ -1,7 +1,7 @@
 From fb4b09e4a0f066f790eadd2e5b502d3af5609b5d Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Mon, 28 Sep 2026 22:20:23 +0100
-Subject: [PATCH 19/24] restore_session: no key wait on first launch, go
+Subject: [PATCH 19/25] restore_session: no key wait on first launch, go
  straight to shell
 
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>

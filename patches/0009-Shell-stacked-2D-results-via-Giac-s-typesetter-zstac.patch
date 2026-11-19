@@ -1,7 +1,7 @@
 From 4ffa92df11850035ecbd8945ec805b4b24ace6a1 Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Fri, 25 Sep 2026 16:59:26 +0100
-Subject: [PATCH 09/24] Shell: stacked (2D) results via Giac's typesetter
+Subject: [PATCH 09/25] Shell: stacked (2D) results via Giac's typesetter
  (zstack), right-aligned at x=374
 
 Console_Disp asks zstack_console_layout() for the pixel row (zly) and the

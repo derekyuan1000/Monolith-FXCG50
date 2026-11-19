@@ -1,7 +1,7 @@
 From 5b0305f801fcbd7b3b247b89185175a793235021 Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Thu, 24 Sep 2026 19:51:53 +0100
-Subject: [PATCH 06/24] Two-way angle sync: Giac-side changes are written to
+Subject: [PATCH 06/25] Two-way angle sync: Giac-side changes are written to
  the OS byte (zskin_angle_step)
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>

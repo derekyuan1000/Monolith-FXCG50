@@ -1,7 +1,7 @@
 From b54a2ef435c0cf8ef88667de39ddb4c320f53716 Mon Sep 17 00:00:00 2001
 From: Derek Yuan <khicas-fork@localhost>
 Date: Thu, 19 Nov 2026 23:47:20 +0000
-Subject: [PATCH 23/24] Route every screen flip through zflip() (skin/zflip.c);
+Subject: [PATCH 23/25] Route every screen flip through zflip() (skin/zflip.c);
  count flips and ticks per key in in_ckgetkey
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>

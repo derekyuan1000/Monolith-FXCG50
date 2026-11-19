@@ -1,7 +1,7 @@
 From cd5d4b337b70f0526cd5ba0309840d5fe2accb47 Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Mon, 28 Sep 2026 22:44:02 +0100
-Subject: [PATCH 20/24] set_xcas_status: DisplayStatusArea moved into
+Subject: [PATCH 20/25] set_xcas_status: DisplayStatusArea moved into
  zskin_status_runmat
 
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>

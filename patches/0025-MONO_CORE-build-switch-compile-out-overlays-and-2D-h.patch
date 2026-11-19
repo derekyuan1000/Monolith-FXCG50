@@ -1,0 +1,94 @@
+From e03d141b5409defdbf7f2021eb86531f88bc3fe3 Mon Sep 17 00:00:00 2001
+From: Derek Yuan <khicas-fork@localhost>
+Date: Thu, 19 Nov 2026 23:52:41 +0000
+Subject: [PATCH 25/25] MONO_CORE build switch: compile out overlays and 2D
+ history for core-loop stabilisation
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ console.cc | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/console.cc b/console.cc
+index ab967c7..9b91e68 100644
+--- a/console.cc
++++ b/console.cc
+@@ -2475,6 +2475,7 @@ int Console_GetKey(){
+     if (key!=KEY_CHAR_FRAC) translate_fkey(key);
+     // Monolith (M2 task 9): EXIT on the bare shell is a silent no-op (mode-switch dialog removed).
+     if (key==KEY_CTRL_EXIT) { CONSOLE_DISP_DEFERRED(); continue; }
++#ifndef MONO_CORE // S<->D pop-up (core build: stock S<->D)
+     if (key==KEY_CTRL_SD || key==KEY_CTRL_FD){
+       // Monolith (M2 task 6): S<->D opens a native-list-style pop-up to choose the form of the last result
+       // (docs/KEY_CONFLICTS.md section 3, "S<->D" row), instead of the add-ins menu (still reachable from
+@@ -2484,6 +2485,7 @@ int Console_GetKey(){
+       // hooks above do, so Console_GetLine's own loop sees CONSOLE_NEW_LINE_SET when one is picked.
+       return zsd_open(contextptr);
+     }
++#endif
+     if (key==KEY_CTRL_PASTE)
+       return Console_Input((const unsigned char*) paste_clipboard());
+     if ( (key >= '0' && key <= '9' ) || (key >= 'A' && key <= 'Z') || (key >= 'a' && key <= 'z')){
+@@ -2531,6 +2533,7 @@ int Console_GetKey(){
+ 	}
+       }
+     }
++#ifndef MONO_CORE // natural-input templates + fraction editor (core build: stock text/eqws editors)
+     if ((key==KEY_CHAR_POW || key==KEY_CHAR_SQUARE || key==KEY_CHAR_RECIP || key==KEY_CHAR_ROOT ||
+ 	 key==KEY_CHAR_VALR || key==KEY_CHAR_POWROOT) &&
+ 	!alph && Current_Line==Last_Line && !Line[Current_Line].readonly){
+@@ -2555,6 +2558,7 @@ int Console_GetKey(){
+       if (znr!=ZNAT_NOT_HANDLED)
+ 	return znr;
+     }
++#endif
+     if ( key == KEY_CHAR_FRAC ||
+         ( (key==KEY_CTRL_RIGHT || key==KEY_CTRL_LEFT) && Current_Line<Last_Line) ){
+       int l=Current_Line;
+@@ -2598,6 +2602,7 @@ int Console_GetKey(){
+       // pick) returns to the shell like any native sub-bar (task 7 review fix: it used to open the catalog);
+       // ZNAT_NOT_HANDLED (the template did not fit, or the line does not fit the nin/ model) falls through to
+       // the catalog, as F4 always behaved.
++#ifndef MONO_CORE // F4 MATH template sub-bar (core build: F4 opens the catalog)
+       if (!alph && Current_Line==Last_Line && !Line[Current_Line].readonly){
+ 	int mk=znat_math_submenu(menucolorbg);
+ 	if (mk==ZNAT_TPL_NONE){
+@@ -2608,6 +2613,7 @@ int Console_GetKey(){
+ 	if (znr!=ZNAT_NOT_HANDLED)
+ 	  return znr;
+       }
++#endif
+       char buf[512];
+       if (!showCatalog(buf,0,0))
+ 	buf[0]=0;
+@@ -2814,6 +2820,7 @@ int Console_GetKey(){
+     }
+     // Monolith (M2 task 7 review): the three native homes below are bare F1/F2/F3 only; with alpha on they keep
+     // their old path further down (the alpha legend still shows those old entries), as F4 does.
++#ifndef MONO_CORE // F1-F3 homes, Shift+F1/F2/F3 sub-bars (core build: Console_FMenu below)
+     if (key==KEY_CTRL_F1 && !alph){
+       // Monolith (M2 task 7): F1 JUMP (docs/KEY_CONFLICTS.md section 2), replacing the old menu_f1 fast
+       // menu here (moved into the new F5 CAS sub-bar below, unchanged). skin/zshellbar.cc zjump_open.
+@@ -2840,6 +2847,7 @@ int Console_GetKey(){
+     if (key==KEY_CTRL_F7) return zcas_open(menucolorbg);
+     if (key==KEY_CTRL_F8) return Console_FMenu(KEY_CTRL_F6);
+     if (key==KEY_CTRL_F9) return zpinned_open();
++#endif
+     if ( (key >= KEY_CTRL_F1 && key <= KEY_CTRL_F6) 
+ 	 || (key >= KEY_CTRL_F7 && key <= KEY_CTRL_F20) 
+ 	 ){
+@@ -3487,7 +3495,11 @@ int Console_Disp(){
+   Bdisp_AllClr_VRAM();
+   // Monolith: pixel row of each visible level (zly) and how it is drawn (zlm); see zstack.h.
+   int zly[LINE_DISP_MAX]; unsigned char zlm[LINE_DISP_MAX];
++#ifndef MONO_CORE
+   zstack_console_layout(zly,zlm);
++#else // core build: plain 1D history, one text row per level
++  for (int zi=0;zi<LINE_DISP_MAX;++zi){ zly[zi]=zi*vfontsize; zlm[zi]=ZSTACK_TEXT; }
++#endif
+ 
+   //GetFKeyIconPointer( 0x01BE, &ficon );
+   //DisplayFKeyIcon( i, ficon);
+-- 
+2.53.0
+
