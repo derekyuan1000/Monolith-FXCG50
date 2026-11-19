@@ -1,7 +1,7 @@
 From c36f606274dc3f4d92064f88da9b1939dbfe79b4 Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Mon, 28 Sep 2026 17:49:15 +0100
-Subject: [PATCH 15/23] Flicker fix: suppress premature flip in
+Subject: [PATCH 15/24] Flicker fix: suppress premature flip in
  console_disp_status when overlay is drawing; decimal output default
 
 ---

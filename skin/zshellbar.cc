@@ -24,7 +24,7 @@
 #include "console.h"
 #include "main.h"
 #include "gfx.h"
-#include "zflip.h"
+#include "zskin_status.h"
 #include "theme.h"
 #include "zskin_tabs.h"
 
@@ -36,21 +36,18 @@ extern int Start_Line, Last_Line;
  * default bottom bar did (string(menu_f1) in get_current_console_menu). */
 extern char menu_f1[], menu_f2[], menu_f3[];
 
-extern int g_suppress_status_flip;
+extern int g_defer_flip;
 /* Console_Disp() already draws the frame including the default tab-bar labels (console_disp_status(), at the
  * end of Console_Disp()); this overlays the sub-bar's own labels on the same tab row and flips the buffer, the
  * same two extra steps skin/znat.cc's redraw() takes after its own Console_Disp() call. */
 static void draw_subbar(const char labels[SKIN_TABS][SKIN_TAB_LABEL_MAX], int menucolorbg, const char *msg)
 {
-  g_suppress_status_flip = 1;
+  ++g_defer_flip;
   Console_Disp();
-  g_suppress_status_flip = 0;
+  --g_defer_flip;
   skin_tabs_draw(labels, skin_tabs_fg(menucolorbg));
-  if (msg) {   /* after Console_Disp (its set_xcas_status would overwrite it), same order as znat.cc's redraw() */
-    DefineStatusMessage((char *)msg, 1, 0, 0);
-    DisplayStatusArea();
-  }
-  zflip();
+  /* every caller waits in in_ckgetkey next, which redraws the status bar (keeping a zskin_status_msg) and flips */
+  if (msg) zskin_status_msg(msg);
 }
 
 /* Bounded copy of an FMENU.py legend (up to maxfmenusize-1 = 15 chars) into a tab label slot. */
@@ -316,12 +313,11 @@ int zpinned_open(void)
 
   for (;;) {
     int key;
-    g_suppress_status_flip = 1;
+    ++g_defer_flip;
     Console_Disp();
-    g_suppress_status_flip = 0;
+    --g_defer_flip;
     zpinned_draw_list(lines, n, sel, scroll);
-    skin_tabs_draw(labels, skin_tabs_fg(12345));
-    zflip();
+    skin_tabs_draw(labels, skin_tabs_fg(12345));   /* in_ckgetkey below flips */
 
     in_ckgetkey(&key, 1, 0, 0, 0, 12345);
 

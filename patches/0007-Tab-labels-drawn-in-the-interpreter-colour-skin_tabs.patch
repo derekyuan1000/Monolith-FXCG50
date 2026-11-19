@@ -1,7 +1,7 @@
 From df5c8942db8e508aef52b0788651ec0af5863ecb Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Thu, 24 Sep 2026 20:52:28 +0100
-Subject: [PATCH 07/23] Tab labels drawn in the interpreter colour
+Subject: [PATCH 07/24] Tab labels drawn in the interpreter colour
  (skin_tabs_fg(menucolorbg))
 
 The old menu-band background colour showed the active interpreter; the tab bar

@@ -1,7 +1,7 @@
 From d72bee47ae0fdc190b089477ef6b6b87a63c4a70 Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Fri, 25 Sep 2026 16:36:27 +0100
-Subject: [PATCH 08/23] Shell: fraction key opens the natural-input editor
+Subject: [PATCH 08/24] Shell: fraction key opens the natural-input editor
  (znat_edit) on the current line; stock eqws stays for other cases
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>

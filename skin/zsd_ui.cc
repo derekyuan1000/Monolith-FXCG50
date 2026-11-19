@@ -36,20 +36,20 @@
 #include "console.h"
 #include "main.h"
 #include "gfx.h"
-#include "zflip.h"
+#include "zskin_status.h"
 #include "theme.h"
 #include "zsd.h"
 
-extern int g_suppress_status_flip;
+extern int g_defer_flip;
 static void zsd_draw(int sel)
 {
   int h = ZSD_FORM_COUNT * RM_LINE_PITCH;
   int top = RM_TAB_TOP_Y - h;
   int i;
   const char * const *labels = lang ? zsd_form_label_fr : zsd_form_label;
-  g_suppress_status_flip = 1;
-  Console_Disp();   /* history and the tab bar behind the panel — flip suppressed */
-  g_suppress_status_flip = 0;
+  ++g_defer_flip;
+  Console_Disp();   /* history and the tab bar behind the panel — not flipped */
+  --g_defer_flip;
   gfx_fill_rect(0, top, GFX_WIDTH, h, GFX_WHITE);
   gfx_fill_rect(0, top, GFX_WIDTH, 1, GFX_BLACK);   /* top border, matches znat.cc's panel_clear */
   for (i = 0; i < ZSD_FORM_COUNT; ++i) {
@@ -61,7 +61,7 @@ static void zsd_draw(int sel)
     }
     gfx_text(6, y + 3, labels[i], fg, bg);
   }
-  zflip();
+  /* no flip: zsd_open's in_ckgetkey flips once before it waits */
 }
 
 int zsd_open(GIAC_CONTEXT)
@@ -69,10 +69,8 @@ int zsd_open(GIAC_CONTEXT)
   int sel = 0;
   char cmdbuf[64];
   if (giac::history_out(contextptr).empty()) {
-    /* brief item 3: nothing to convert yet. One-frame status message, same idiom as znat.cc's pending_msg. */
-    DefineStatusMessage((char *)(lang ? "Aucun resultat" : "No result yet"), 1, 0, 0);
-    DisplayStatusArea();
-    zflip();
+    /* brief item 3: nothing to convert yet. Shown until the next key by the shell's in_ckgetkey redraw + flip. */
+    zskin_status_msg(lang ? "Aucun resultat" : "No result yet");
     return CONSOLE_SUCCEEDED;
   }
   for (;;) {

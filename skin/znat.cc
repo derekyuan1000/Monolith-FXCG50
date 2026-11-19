@@ -18,7 +18,6 @@
 #include "console.h"
 #include "main.h"
 #include "gfx.h"
-#include "zflip.h"
 #include "nin.h"
 #include "znat.h"
 
@@ -89,16 +88,16 @@ static void editor_menu(ustl::string &menu)
 
 /* menu/menucolorbg: this panel's legend (editor_menu), drawn over the shell's own one that Console_Disp's
  * console_disp_status draws, before the single buffer flip so the shell legend is never shown. */
-extern int g_suppress_status_flip;
+extern int g_defer_flip;
 static void redraw(const ustl::string &menu, int menucolorbg)
 {
   nin_size sz;
   nin_caret_pos c;
   int h, top, axis, x = LEFT_X;
   char labels[SKIN_TABS][SKIN_TAB_LABEL_MAX];
-  g_suppress_status_flip = 1;
-  Console_Disp();   /* history and the (blanked) current line, tab bar, status icons — flip suppressed */
-  g_suppress_status_flip = 0;
+  ++g_defer_flip;
+  Console_Disp();   /* history and the (blanked) current line, tab bar, status icons — not flipped */
+  --g_defer_flip;
   skin_tabs_split(menu.c_str(), labels);
   skin_tabs_draw(labels, skin_tabs_fg(menucolorbg));
   nin_measure(ed, &met, &sz);
@@ -115,11 +114,9 @@ static void redraw(const ustl::string &menu, int menucolorbg)
     panel_clear(top, h);
     nin_draw(ed, &met, x, axis, 0);
   }
-  if (pending_msg) {
-    DefineStatusMessage((char *)pending_msg, 1, 0, 0);
-    DisplayStatusArea();
-  }
-  zflip();
+  /* in_ckgetkey redraws the status bar and flips once before it waits: no flip here, and the message goes through
+   * zskin_status_msg so that redraw keeps it on screen until the next key. */
+  if (pending_msg) zskin_status_msg(pending_msg);
 }
 
 /* Replace the shell's edit line by s (empty allowed); the shell cursor ends after it, like the stock editors. */
@@ -231,8 +228,7 @@ static int math_submenu(int menucolorbg)
   int page = 0;
   for (;;) {
     int key;
-    math_draw_page(page, menucolorbg);
-    zflip();
+    math_draw_page(page, menucolorbg);   /* in_ckgetkey below flips */
     /* menu/shiftmenu/alphamenu null: casiostatus (main.cc) only redraws the tab bar when all three are non-null,
      * so this sub-bar (drawn above by math_draw_page/skin_tabs_draw) is never blanked from underneath it; shift
      * and alpha state are still tracked by in_ckgetkey the same as everywhere else. */
