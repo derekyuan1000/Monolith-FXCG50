@@ -1,7 +1,7 @@
 From fabdfd89d5167ea1c88212e6e33662242e0baf58 Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Mon, 28 Sep 2026 22:00:00 +0100
-Subject: [PATCH 17/22] Shell: Shift+F1=CAS, Shift+F2=File, Shift+F3=Pinned;
+Subject: [PATCH 17/23] Shell: Shift+F1=CAS, Shift+F2=File, Shift+F3=Pinned;
  EXIT silent no-op; F5/F6 tab labels blank (M2 task 9)
 
 Hand-written patch applied on top of 0016.  Re-export with

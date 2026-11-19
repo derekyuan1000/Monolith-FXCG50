@@ -44,6 +44,20 @@ echo "identity sed applied to $n mkg3a line(s)"
 FORK_OBJS=${FORK_OBJS:-$REPO/tools/fork_objs.txt}
 EXTRA=$( { tr -d '\r' < "$FORK_OBJS" | grep -v '^#' || true; } | tr '\n' ' ')
 sed -i "s/^GUI_OBJS = \(.*\)$/GUI_OBJS = \1 $EXTRA/" Makefile
+# Optional build switches (build.ps1 -Prof / -Core): MONO_PROF=1 shows flips/ticks per key in the status bar,
+# MONO_CORE=1 compiles out the overlays and 2D history so the plain shell loop can be tested on its own.
+DEFS=""
+[ "${MONO_PROF:-0}" = 1 ] && DEFS="$DEFS -DMONO_PROF"
+[ "${MONO_CORE:-0}" = 1 ] && DEFS="$DEFS -DMONO_CORE"
+if [ -n "$DEFS" ]; then
+  sed -i "s/^CFLAGS = /CFLAGS = $DEFS /; s/^CXXFLAGS = /CXXFLAGS = $DEFS /; s/^CXXFLAGS1 = /CXXFLAGS1 = $DEFS /" Makefile
+fi
+# make does not track flags: when they change, drop the objects the switches affect so they are rebuilt.
+if [ "$(cat .monolith_defs 2>/dev/null)" != "$DEFS" ]; then
+  rm -f console.o main.o $EXTRA
+  echo "$DEFS" > .monolith_defs
+fi
+echo "build switches:${DEFS:- none}"
 [ "${1:-}" != "--makefile-only" ] || { echo "Makefile generated: $OUT/Makefile"; exit 0; }
 
 # 4. build

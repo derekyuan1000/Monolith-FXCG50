@@ -36,6 +36,7 @@
 #include "console.h"
 #include "main.h"
 #include "gfx.h"
+#include "zflip.h"
 #include "theme.h"
 #include "zsd.h"
 
@@ -60,7 +61,7 @@ static void zsd_draw(int sel)
     }
     gfx_text(6, y + 3, labels[i], fg, bg);
   }
-  Bdisp_PutDisp_DD();
+  zflip();
 }
 
 int zsd_open(GIAC_CONTEXT)
@@ -71,7 +72,7 @@ int zsd_open(GIAC_CONTEXT)
     /* brief item 3: nothing to convert yet. One-frame status message, same idiom as znat.cc's pending_msg. */
     DefineStatusMessage((char *)(lang ? "Aucun resultat" : "No result yet"), 1, 0, 0);
     DisplayStatusArea();
-    Bdisp_PutDisp_DD();
+    zflip();
     return CONSOLE_SUCCEEDED;
   }
   for (;;) {

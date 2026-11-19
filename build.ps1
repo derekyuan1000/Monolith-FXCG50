@@ -20,6 +20,12 @@
 .PARAMETER NoPackage
   Skip the release zip.
 
+.PARAMETER Prof
+  Profiling build: the status bar shows F<screen flips> T<RTC ticks, 1/128 s> for the last key.
+
+.PARAMETER Core
+  Core-loop build: overlays (fraction editor, S<->D, F-key sub-bars, pinned) and 2D history are compiled out.
+
 .EXAMPLE
   .\build.ps1
 .EXAMPLE
@@ -28,7 +34,9 @@
 param(
   [string]$Distro = 'Ubuntu',
   [switch]$Refork,
-  [switch]$NoPackage
+  [switch]$NoPackage,
+  [switch]$Prof,
+  [switch]$Core
 )
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot
@@ -73,7 +81,8 @@ if (-not $haveFork) {
 }
 
 Write-Host '== Building' -ForegroundColor Cyan
-Invoke-Wsl "$cd bash tools/build_fork.sh"
+$switches = "MONO_PROF=$([int]$Prof.IsPresent) MONO_CORE=$([int]$Core.IsPresent)"
+Invoke-Wsl "$cd $switches bash tools/build_fork.sh"
 
 if (-not $NoPackage) {
   Write-Host '== Packaging' -ForegroundColor Cyan

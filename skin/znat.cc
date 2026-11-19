@@ -18,6 +18,7 @@
 #include "console.h"
 #include "main.h"
 #include "gfx.h"
+#include "zflip.h"
 #include "nin.h"
 #include "znat.h"
 
@@ -118,7 +119,7 @@ static void redraw(const ustl::string &menu, int menucolorbg)
     DefineStatusMessage((char *)pending_msg, 1, 0, 0);
     DisplayStatusArea();
   }
-  Bdisp_PutDisp_DD();
+  zflip();
 }
 
 /* Replace the shell's edit line by s (empty allowed); the shell cursor ends after it, like the stock editors. */
@@ -231,7 +232,7 @@ static int math_submenu(int menucolorbg)
   for (;;) {
     int key;
     math_draw_page(page, menucolorbg);
-    Bdisp_PutDisp_DD();
+    zflip();
     /* menu/shiftmenu/alphamenu null: casiostatus (main.cc) only redraws the tab bar when all three are non-null,
      * so this sub-bar (drawn above by math_draw_page/skin_tabs_draw) is never blanked from underneath it; shift
      * and alpha state are still tracked by in_ckgetkey the same as everywhere else. */

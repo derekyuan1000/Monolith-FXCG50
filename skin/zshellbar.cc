@@ -24,6 +24,7 @@
 #include "console.h"
 #include "main.h"
 #include "gfx.h"
+#include "zflip.h"
 #include "theme.h"
 #include "zskin_tabs.h"
 
@@ -49,7 +50,7 @@ static void draw_subbar(const char labels[SKIN_TABS][SKIN_TAB_LABEL_MAX], int me
     DefineStatusMessage((char *)msg, 1, 0, 0);
     DisplayStatusArea();
   }
-  Bdisp_PutDisp_DD();
+  zflip();
 }
 
 /* Bounded copy of an FMENU.py legend (up to maxfmenusize-1 = 15 chars) into a tab label slot. */
@@ -320,7 +321,7 @@ int zpinned_open(void)
     g_suppress_status_flip = 0;
     zpinned_draw_list(lines, n, sel, scroll);
     skin_tabs_draw(labels, skin_tabs_fg(12345));
-    Bdisp_PutDisp_DD();
+    zflip();
 
     in_ckgetkey(&key, 1, 0, 0, 0, 12345);
 

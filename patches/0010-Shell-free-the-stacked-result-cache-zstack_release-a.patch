@@ -1,7 +1,7 @@
 From 48a4ed1a98456f526f84bc435d19249f78a74264 Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Fri, 25 Sep 2026 17:11:30 +0100
-Subject: [PATCH 10/22] Shell: free the stacked-result cache (zstack_release)
+Subject: [PATCH 10/23] Shell: free the stacked-result cache (zstack_release)
  at the start of do_run
 
 No cached 2D result trees stay on the heap during a computation; they are

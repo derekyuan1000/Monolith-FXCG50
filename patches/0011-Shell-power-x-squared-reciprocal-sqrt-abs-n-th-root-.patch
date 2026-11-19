@@ -1,7 +1,7 @@
 From 8adae285c15f66815d3dce6fe43652d23f5f3054 Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Sun, 27 Sep 2026 13:52:42 +0100
-Subject: [PATCH 11/22] Shell: power/x-squared/reciprocal/sqrt/abs/n-th-root
+Subject: [PATCH 11/23] Shell: power/x-squared/reciprocal/sqrt/abs/n-th-root
  keys open the natural-input editor (znat_edit_template) with that template
  pre-inserted, same guard as the fraction key (M2 task 5). MATH sub-bar,
  matrix nav keys and the rest of the wiring live entirely in skin/znat.cc

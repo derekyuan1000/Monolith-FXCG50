@@ -1,7 +1,7 @@
 From 634b0be3035c3b7b1b6a258c64dbddd370049f23 Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Thu, 24 Sep 2026 17:57:30 +0100
-Subject: [PATCH 01/22] Shell status bar: native OS status icons, route
+Subject: [PATCH 01/23] Shell status bar: native OS status icons, route
  DefineStatusMessage through zskin wrapper
 
 ---

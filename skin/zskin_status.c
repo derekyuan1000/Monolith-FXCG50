@@ -3,16 +3,23 @@
 #include <string.h>
 #include "zskin_status.h"
 #include "gfx.h"
+#include "zflip.h"
+#ifdef MONO_PROF
+#include <stdio.h>
+#endif
 
 #define ICON_FLAGS    (SAF_BATTERY | SAF_ALPHA_SHIFT | SAF_SETUP_ANGLE)
 #define TEXT_FLAGS    (SAF_BATTERY | SAF_TEXT | SAF_GLYPH | SAF_ALPHA_SHIFT)
 /* RUNMAT_FLAGS keeps SAF_BATTERY (battery icon on right) but drops
  * SAF_ALPHA_SHIFT to reduce autonomous OS refreshes.  The wait loop in
- * in_ckgetkey now calls set_xcas_status() before every Bdisp_PutDisp_DD
+ * in_ckgetkey now calls set_xcas_status() before every zflip()
  * so boxes are redrawn each flip regardless. */
 #define RUNMAT_FLAGS  (SAF_TEXT | SAF_GLYPH)
 
 static int mode = 0; /* 0 unknown, 1 icons, 2 text, 3 runmat */
+static const char *pending_msg; /* zskin_status_msg: shown over the RUN-MAT bar until the next key */
+
+void zskin_status_msg(const char *msg) { pending_msg = msg; }
 
 void zskin_status_icons(void)
 {
@@ -87,4 +94,16 @@ void zskin_status_runmat(int is_radian)
     if (i < 4)
       x += lw + gfx_text_width(seps[i]);
   }
+
+  /* 3. A message posted with zskin_status_msg replaces the bar until the next key (zflip_key_begin clears it),
+   *    so the redraw in_ckgetkey does before its flip no longer wipes it. */
+  if (pending_msg) {
+    zskin_status_message((char *)pending_msg, 1, 0, 0);
+    DisplayStatusArea();
+  }
+#ifdef MONO_PROF
+  { char b[24];
+    sprintf(b, "F%u T%d", zflip_last_count(), zflip_last_ticks());
+    gfx_text(300, 2, b, GFX_BLACK, GFX_WHITE); }
+#endif
 }

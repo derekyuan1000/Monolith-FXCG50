@@ -9,6 +9,8 @@ void zskin_status_icons(void);
 void zskin_status_message(char *msg, short p2, char color, char p4);
 /* RUN-MAT style: Math  Deg/Rad  Norm1     d/c  Real */
 void zskin_status_runmat(int is_radian);
+/* Show msg in the status area until the next key (it survives in_ckgetkey's pre-wait redraw). 0 clears. */
+void zskin_status_msg(const char *msg);
 
 #ifdef __cplusplus
 }

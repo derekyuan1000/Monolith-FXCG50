@@ -11,3 +11,4 @@ zsd.o
 zsd_ui.o
 zskin_scroll.o
 zshellbar.o
+zflip.o

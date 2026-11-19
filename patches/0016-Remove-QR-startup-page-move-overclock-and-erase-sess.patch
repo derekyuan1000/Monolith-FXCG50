@@ -1,7 +1,7 @@
 From 6116e6618aa3e1cb0873af8b95af6e74623a0674 Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Mon, 28 Sep 2026 18:02:01 +0100
-Subject: [PATCH 16/22] Remove QR startup page; move overclock and erase
+Subject: [PATCH 16/23] Remove QR startup page; move overclock and erase
  session to SETUP menu
 
 ---
