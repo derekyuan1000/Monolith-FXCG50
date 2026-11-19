@@ -84,7 +84,9 @@ Write-Host '== Building' -ForegroundColor Cyan
 $switches = "MONO_PROF=$([int]$Prof.IsPresent) MONO_CORE=$([int]$Core.IsPresent)"
 Invoke-Wsl "$cd $switches bash tools/build_fork.sh"
 
-if (-not $NoPackage) {
+if ($Prof -or $Core) {
+  Write-Host '== Dev build (-Prof/-Core): not packaged as a release' -ForegroundColor Yellow
+} elseif (-not $NoPackage) {
   Write-Host '== Packaging' -ForegroundColor Cyan
   Invoke-Wsl "$cd bash tools/package_release.sh"
 }
