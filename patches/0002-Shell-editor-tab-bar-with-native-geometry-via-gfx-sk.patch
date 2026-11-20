@@ -1,7 +1,7 @@
 From f8d77b54e81eea614705674624a4b49187d3dd1c Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Thu, 24 Sep 2026 18:03:54 +0100
-Subject: [PATCH 02/25] Shell/editor tab bar with native geometry via gfx/skin
+Subject: [PATCH 02/26] Shell/editor tab bar with native geometry via gfx/skin
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
 ---

@@ -1,7 +1,7 @@
 From 47881b0b08c7c04adc9fd938410174102fbb0809 Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Thu, 24 Sep 2026 19:23:12 +0100
-Subject: [PATCH 03/25] Monolith: names, ram part file, about screen
+Subject: [PATCH 03/26] Monolith: names, ram part file, about screen
 
 ---
  catalogen.cpp |  2 +-

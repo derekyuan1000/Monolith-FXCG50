@@ -58,6 +58,10 @@ if [ "$(cat .monolith_defs 2>/dev/null)" != "$DEFS" ]; then
   echo "$DEFS" > .monolith_defs
 fi
 echo "build switches:${DEFS:- none}"
+# Dev builds get their own names so they can never be installed or packaged as a release by mistake.
+SUFFIX=""
+[ "${MONO_CORE:-0}" = 1 ] && SUFFIX="${SUFFIX}_core"
+[ "${MONO_PROF:-0}" = 1 ] && SUFFIX="${SUFFIX}_prof"
 [ "${1:-}" != "--makefile-only" ] || { echo "Makefile generated: $OUT/Makefile"; exit 0; }
 
 # 4. build
@@ -70,9 +74,10 @@ ls -l khicas50.g3a khicas50.ac2 emucas50.g3a khicas50.882
 sha256sum khicas50.g3a khicas50.ac2 emucas50.g3a khicas50.882
 mkdir -p "$REPO/build/fork"
 rm -f "$REPO"/build/fork/khicas50.* "$REPO"/build/fork/emucas50.g3a   # stale names must not be installed by mistake
-cp -f khicas50.g3a "$REPO/build/fork/${STEM}.g3a"
-cp -f khicas50.ac2 "$REPO/build/fork/${STEM}.ac2"
-cp -f emucas50.g3a "$REPO/build/fork/${STEM}_emu.g3a"
-cp -f khicas50.882 "$REPO/build/fork/${STEM}.882"
+# a dev build's .ac2 must be installed as @MONOLITH\monolith.ac2 together with its own .g3a
+cp -f khicas50.g3a "$REPO/build/fork/${STEM}${SUFFIX}.g3a"
+cp -f khicas50.ac2 "$REPO/build/fork/${STEM}${SUFFIX}.ac2"
+cp -f emucas50.g3a "$REPO/build/fork/${STEM}${SUFFIX}_emu.g3a"
+cp -f khicas50.882 "$REPO/build/fork/${STEM}${SUFFIX}.882"
 cp -f build.log "$REPO/build/fork/"
 echo "=== copied to $REPO/build/fork/"

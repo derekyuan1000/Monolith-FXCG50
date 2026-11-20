@@ -1,7 +1,7 @@
 From e03d141b5409defdbf7f2021eb86531f88bc3fe3 Mon Sep 17 00:00:00 2001
 From: Derek Yuan <khicas-fork@localhost>
 Date: Thu, 19 Nov 2026 23:52:41 +0000
-Subject: [PATCH 25/25] MONO_CORE build switch: compile out overlays and 2D
+Subject: [PATCH 25/26] MONO_CORE build switch: compile out overlays and 2D
  history for core-loop stabilisation
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>

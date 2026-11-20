@@ -16,4 +16,7 @@ Build with `.\build.ps1 -Prof`; the status bar shows `F<flips> T<ticks>` for the
 | F4 MATH → EXIT | | |
 | `a b/c` (fraction editor), type `1`, EXIT | | |
 
-Expected from reading the code: before = F2 for plain typing; after = F1.
+Expected from reading the code: before = F2 for plain typing; after = F1. EXE: after = F2 (one flip so the input
+moves to history before the evaluation, one before the next wait); its T includes the evaluation time.
+F counts only Monolith's own flips: OS screens (GetKey in menus, catalogs, the emulator) present the screen
+themselves and are not counted.

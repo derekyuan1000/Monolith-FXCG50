@@ -1,7 +1,7 @@
 From afae199e92d9fbefe6d759ce03620c26bc575857 Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Sun, 27 Sep 2026 18:00:00 +0100
-Subject: [PATCH 14/25] Shell: task 7 review fixes (EXIT in the F4 MATH bar
+Subject: [PATCH 14/26] Shell: task 7 review fixes (EXIT in the F4 MATH bar
  returns to the shell, alpha-F1..F3 keep their old path, right-aligned text
  never starts left of x=0)
 

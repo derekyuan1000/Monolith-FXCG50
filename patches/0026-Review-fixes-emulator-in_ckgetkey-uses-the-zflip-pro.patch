@@ -1,0 +1,90 @@
+From ae65015cd3484807498b0ca24398b5b2d86d06b0 Mon Sep 17 00:00:00 2001
+From: Derek Yuan <khicas-fork@localhost>
+Date: Fri, 20 Nov 2026 00:05:18 +0000
+Subject: [PATCH 26/26] Review fixes: emulator in_ckgetkey uses the zflip
+ protocol; main loop redraws deferred (Console_Disp_Deferred); console.h
+ declares g_defer_flip
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ console.cc | 6 +++++-
+ console.h  | 3 ++-
+ main.cc    | 9 +++++++--
+ 3 files changed, 14 insertions(+), 4 deletions(-)
+
+diff --git a/console.cc b/console.cc
+index 9b91e68..dd7ebc5 100644
+--- a/console.cc
++++ b/console.cc
+@@ -2475,7 +2475,7 @@ int Console_GetKey(){
+     if (key!=KEY_CHAR_FRAC) translate_fkey(key);
+     // Monolith (M2 task 9): EXIT on the bare shell is a silent no-op (mode-switch dialog removed).
+     if (key==KEY_CTRL_EXIT) { CONSOLE_DISP_DEFERRED(); continue; }
+-#ifndef MONO_CORE // S<->D pop-up (core build: stock S<->D)
++#ifndef MONO_CORE // S<->D pop-up (core build: S<->D does nothing, F<->D inserts approx( as in stock)
+     if (key==KEY_CTRL_SD || key==KEY_CTRL_FD){
+       // Monolith (M2 task 6): S<->D opens a native-list-style pop-up to choose the form of the last result
+       // (docs/KEY_CONFLICTS.md section 3, "S<->D" row), instead of the add-ins menu (still reachable from
+@@ -3705,6 +3705,10 @@ int Console_Disp(){
+   return CONSOLE_SUCCEEDED;
+ }
+ 
++void Console_Disp_Deferred(){
++  CONSOLE_DISP_DEFERRED();
++}
++
+ void dConsoleRedraw(){
+   Console_Disp();
+ }
+diff --git a/console.h b/console.h
+index faec0ab..291da5e 100644
+--- a/console.h
++++ b/console.h
+@@ -151,7 +151,8 @@ const char * input_matrix(bool list);
+ extern char xcas_status[64];
+ void set_xcas_status();
+ void zskin_sync_modes();
+-extern int g_suppress_status_flip;  /* Monolith: suppresses premature flip when overlay is drawing */
++extern int g_defer_flip;  /* Monolith: while > 0, Console_Disp draws but does not flip */
++void Console_Disp_Deferred(void);  /* Monolith: Console_Disp without the flip, for when in_ckgetkey(waitforkey=1) runs next */
+ 
+ extern int xthetat;
+ const char * keytostring(int key,int keyflag); // key to char *, 0 if not handled
+diff --git a/main.cc b/main.cc
+index fb09bce..1ddab08 100644
+--- a/main.cc
++++ b/main.cc
+@@ -850,7 +850,12 @@ int in_ckgetkey(int * keyptr,int waitforkey,const char * menu,const char * shift
+       shiftstate=oldshiftstate=false;
+     casiostatus(0,0,0,0);
+     casiostatus(menu,shiftmenu,alphamenu,menucolorbg);
++    // Monolith: same protocol as the device path below (status bar + pending message, one flip, counters)
++    set_xcas_status();
++    zflip();
++    zflip_key_end();
+     GetKey(keyptr);
++    zflip_key_begin();
+     if (*keyptr>=KEY_CTRL_F1 && *keyptr<=KEY_CTRL_F6 && (keyflag & 1))
+       *keyptr += 9906; // shift-F1 -> F7
+     if (*keyptr>=KEY_CTRL_F1 && *keyptr<=KEY_CTRL_F6 && (alphastate && !alphalock))
+@@ -1523,7 +1528,7 @@ int main1(){
+ 	Console_Output((const unsigned char *)" cancelled");
+ 	Console_NewLine(LINE_TYPE_OUTPUT,1);
+ 	//ck_getkey(&key);
+-	Console_Disp();
++	Console_Disp_Deferred(); // Monolith: Console_GetLine's in_ckgetkey flips
+ 	continue;
+       }
+     }
+@@ -1537,7 +1542,7 @@ int main1(){
+     //print_mem_info();
+     Console_NewLine(LINE_TYPE_OUTPUT,1);
+     //ck_getkey(&key);
+-    Console_Disp();
++    Console_Disp_Deferred(); // Monolith: Console_GetLine's in_ckgetkey flips
+   }
+   for(;;)
+     ck_getkey(&key);
+-- 
+2.53.0
+

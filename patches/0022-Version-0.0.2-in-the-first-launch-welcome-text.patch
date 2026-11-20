@@ -1,7 +1,7 @@
 From 8169adac9830a5f83318ebf3cadbd6acdef549ba Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Sun, 11 Oct 2026 21:57:27 +0100
-Subject: [PATCH 22/25] Version 0.0.2 in the first-launch welcome text
+Subject: [PATCH 22/26] Version 0.0.2 in the first-launch welcome text
 
 ---
  main.cc | 2 +-

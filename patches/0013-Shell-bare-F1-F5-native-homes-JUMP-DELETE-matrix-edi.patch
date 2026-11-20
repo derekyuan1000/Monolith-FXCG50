@@ -1,7 +1,7 @@
 From 79652187aca7e01d15f08bc109e36e139104f5a2 Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Sun, 27 Sep 2026 15:02:23 +0100
-Subject: [PATCH 13/25] Shell: bare F1-F5 native homes
+Subject: [PATCH 13/26] Shell: bare F1-F5 native homes
  (JUMP/DELETE/matrix-editor/MATH-first/CAS sub-bar), right-aligned results,
  history scrollbar (M2 task 7)
 

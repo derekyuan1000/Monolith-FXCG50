@@ -1,7 +1,7 @@
 From e40c5f0124ccf0a85dc4bdddc19b60acf3be4117 Mon Sep 17 00:00:00 2001
 From: khicas-fork <khicas-fork@localhost>
 Date: Sun, 27 Sep 2026 14:21:56 +0100
-Subject: [PATCH 12/25] Shell: S<->D opens the result-form pop-up (zsd_open)
+Subject: [PATCH 12/26] Shell: S<->D opens the result-form pop-up (zsd_open)
  instead of the add-ins menu (M2 task 6)
 
 ---

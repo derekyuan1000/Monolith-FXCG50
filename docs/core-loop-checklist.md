@@ -1,8 +1,9 @@
 # Core-loop acceptance checklist
 
 Run on the fx-CG50 (OS 3.70 or 3.80.1, not 3.80.0) with a `-Prof` build, first `.\build.ps1 -Core -Prof`
-(no overlays, 1D history), then `.\build.ps1 -Prof` (everything on). Install the `.g3a` **and** the `.ac2` from
-the same build.
+(no overlays, 1D history: `build/fork/monolith_core_prof.g3a` + `.ac2`), then `.\build.ps1 -Prof` (everything on:
+`monolith_prof.*`). Install the `.g3a` **and** the `.ac2` from the same build; the `.ac2` goes into `@MONOLITH`
+renamed to `monolith.ac2`.
 
 A row **fails** on any of: flicker, a blank frame, a stale or missing character, the cursor in the wrong place,
 or a status bar / Shift-Alpha indicator that lags a key. Note the `F` value (screen flips for that key) when it
@@ -14,12 +15,12 @@ is not 1.
 | 2 | ← ×10, type `x`, then → to the end | `x` inserted at the cursor; untouched history does not visibly redraw; F1 |
 | 3 | DEL ×5 in the middle of the line, then at the start | the right characters go; DEL at the start does nothing |
 | 4 | SHIFT, SHIFT; ALPHA, ALPHA; SHIFT then ALPHA (lock), ALPHA | the indicator changes on every press, no lag; F1 each |
-| 5 | EXE on `2+3` | input moves to history, `5` right-aligned, a new empty line; F1 |
+| 5 | EXE on `2+3` | input moves to history, `5` right-aligned, a new empty line; F2 (one flip before the evaluation, one before the next wait; T includes the evaluation) |
 | 6 | EXE on an empty line | nothing breaks, no blank frame |
 | 7 | EXE on `2+` (syntax error) | the error shows once; the line is editable again |
 | 8 | EXE `1` thirty times (history taller than the screen), then ↑ ×30, ↓ ×30 | selection and scrollbar track the cursor, no tearing |
 | 9 | Hold a digit key for 3 s (autorepeat) | no dropped or doubled characters; F stays 1 |
-| 10 | `for(k:=0;k<200;k++) print(k)` | the numbers scroll **while** it runs, not only at the end |
+| 10 | `for(k:=0;k<200;k++) print(k)` | all 200 lines appear when it ends, same as 0.0.2 (print output has never been redrawn live in this build; live output would be a separate feature) |
 | 11 | `factor(2^200+1)`, then AC/ON while it runs | the input is already in history while computing; AC/ON interrupts; the shell redraws fully |
 | 12 | MENU → home screen → back into Monolith | the screen is fully drawn on return, same session |
 | 13 | Leave it idle until auto power-off, then turn it on | the shell comes back fully drawn |
