@@ -1,0 +1,13 @@
+key SQRT
+type 8
+key RIGHT
+type +
+key NROOT
+type 3
+key RIGHT
+type x+1
+key RIGHT
+type +
+key SQRT
+type 1/2
+shot roots

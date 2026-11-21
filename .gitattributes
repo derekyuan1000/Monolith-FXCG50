@@ -1,6 +1,9 @@
 *.sh text eol=lf
+*.py text eol=lf
+*.c text eol=lf
+*.cc text eol=lf
+*.cpp text eol=lf
+*.h text eol=lf
 Makefile text eol=lf
-tests/corpus/* text eol=lf
-assets/*.png binary
-tools/fork_objs.txt text eol=lf
-patches/*.patch text eol=lf
+VERSION text eol=lf
+*.png binary

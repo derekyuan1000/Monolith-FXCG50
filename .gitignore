@@ -1,8 +1,6 @@
-# Reference screenshots of Casio's OS: never committed (CLAUDE.md §3)
-ref/
-# Upstream KhiCAS/Giac tarballs and unpacked trees (fetched by tools/build_stock.sh)
-upstream/
 # Build outputs
+build/
+host/out/
 *.o
 *.a
 *.elf
@@ -11,11 +9,8 @@ upstream/
 *.g3a
 *.ac2
 *.882
+__pycache__/
 
 # IDE files
 .idea/
-# Local build outputs
-build/
-# Subagent-driven-development scratch (ledger, briefs, reports)
-.superpowers/
-__pycache__/
+.vscode/

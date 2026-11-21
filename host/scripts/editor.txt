@@ -1,0 +1,106 @@
+# editor behaviour
+type 12/
+expect ((12)/())
+type 3
+key LEFT LEFT
+type +
+expect +((12)/(3))
+key AC
+type 2(x+1)/
+expect ((2*(x+1))/())
+key AC
+type a+b/c
+expect a+((b)/(c))
+key AC
+key SQRT
+type 2
+key RIGHT
+type x
+expect sqrt(2)*x
+key AC
+key NROOT
+type 3
+key RIGHT
+type 8
+expect surd(8,3)
+key AC
+key ABS
+type x-1
+key RIGHT
+key SQUARE
+expect abs(x-1)^(2)
+key AC
+key EXP
+type 2x
+key RIGHT
+type +1
+expect e^(2x)+1
+key AC
+# backspace dissolves a fraction, keeping both parts
+type 1/2
+key LEFT
+key DEL
+expect 12
+key AC
+type 1/2
+key DEL DEL
+expect 1
+key DEL
+expect 
+key AC
+# superscript: up/down
+type x
+key POW
+type 2
+key DOWN
+type +y
+expect x^(2)+y
+key LEFT LEFT LEFT
+key DEL
+expect x^()+y
+key AC
+type 3/4
+key UP
+type 5
+expect ((35)/(4))
+key AC
+# implicit products
+type 2
+key SQRT
+type 3
+key RIGHT
+type π
+expect 2*sqrt(3)*pi
+key AC
+type 2/3
+key RIGHT
+type x
+expect ((2)/(3))*x
+key AC
+type sin(x)/
+type 2
+expect ((sin(x))/(2))
+shot editor_end
+key AC
+key SQRT
+key DEL
+expect 
+key AC
+key NROOT
+shot nroot_empty
+roundtrip -1/2
+roundtrip -(x+1)/2
+roundtrip a-(b-c)
+roundtrip 2^(-1)
+roundtrip x^(1/3)
+roundtrip (-2)^3
+roundtrip -2^3
+roundtrip 3*(-2)
+roundtrip x/(2*y)
+roundtrip 1/(x+1)^2
+roundtrip [1,2,3]
+roundtrip "hello"
+roundtrip 5!
+roundtrip a<=b
+roundtrip x:=3
+roundtrip 1.5e+12
