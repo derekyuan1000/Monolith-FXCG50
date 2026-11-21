@@ -17,6 +17,7 @@ Giac/Xcas computer algebra system for the Casio fx-CG50) with a new front end. Y
 | Reuse | ↑ selects past results and inputs, EXE puts them back in the input, DEL deletes one |
 | Toolbox | OPTN opens an Upsilon-style toolbox built from KhiCAS's menus, with short descriptions. It also holds the catalogue, variables, file menu, settings and the Python/Xcas switch. The F-key bar is gone |
 | Mocha everywhere | KhiCAS's own screens (graphs, catalogue, file menu, editor) are recoloured to match |
+| Straight in | No documentation QR page at start-up: Monolith opens on the Calculation screen |
 | Side by side | The files are `monolith.g3a` and `monolith.ac2`, so stock KhiCAS can stay installed |
 
 ## Install
